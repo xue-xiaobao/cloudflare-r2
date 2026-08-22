@@ -38,44 +38,22 @@
 <a id="install"></a>
 ## 安装
 
-使用开源 Skills CLI 从 GitHub 安装。`npx` 随 Node.js 一起提供，安装目录由当前 Agent 和 Skills CLI 自动选择。本 Skill 适用于支持标准 `SKILL.md` 目录的 Agent。
-
-### 全局安装
-
-安装到当前用户，并同步到 Skills CLI 检测到的所有 Agent：
+使用 Skills CLI 安装到当前用户的兼容 Agent：
 
 ```bash
 npx skills add xue-xiaobao/cloudflare-r2 -g -a '*' -y
 ```
 
-### 项目级安装
-
-安装到当前项目，并同步到当前项目中检测到的所有 Agent：
+项目级安装时，去掉 `-g`：
 
 ```bash
 npx skills add xue-xiaobao/cloudflare-r2 -a '*' -y
 ```
 
-### 指定 Agent
-
-把 `*` 换成 CLI 支持的 Agent 名称：
-
-```bash
-npx skills add xue-xiaobao/cloudflare-r2 -g -a codex claude-code -y
-```
-
-`npx skills` 会根据作用域和目标 Agent 选择安装路径；以安装器最后输出的目标路径为准。不同 Agent 的调用语法可能不同，请按照对应 Agent 的说明调用已安装的 `cloudflare-r2`。
-
-检查已安装的 Skill：
+安装目录由 CLI 自动选择，调用方式按 Agent 的说明执行。检查安装结果：
 
 ```bash
 npx skills list
-```
-
-查看仓库中可安装的 Skill：
-
-```bash
-npx skills add xue-xiaobao/cloudflare-r2 --list
 ```
 
 <a id="usage"></a>

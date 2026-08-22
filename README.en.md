@@ -38,44 +38,22 @@ It helps you:
 <a id="install"></a>
 ## Installation
 
-Install it with the open-source Skills CLI. `npx` is provided with Node.js, and the CLI selects the installation path for the current Agent. The Skill follows the standard `SKILL.md` layout.
-
-### Global installation
-
-Install for the current user and sync to every Agent detected by the CLI:
+Install it with the Skills CLI for the current user's compatible Agents:
 
 ```bash
 npx skills add xue-xiaobao/cloudflare-r2 -g -a '*' -y
 ```
 
-### Project installation
-
-Install in the current project and sync to every Agent detected in that project:
+For project scope, remove `-g`:
 
 ```bash
 npx skills add xue-xiaobao/cloudflare-r2 -a '*' -y
 ```
 
-### Specific Agents
-
-Replace `*` with Agent names supported by your CLI:
-
-```bash
-npx skills add xue-xiaobao/cloudflare-r2 -g -a codex claude-code -y
-```
-
-The CLI chooses the installation path based on scope and target Agents. Follow each Agent's own invocation syntax after installation.
-
-Check installed skills:
+The CLI selects the installation path. Follow your Agent's invocation syntax, then check the installation:
 
 ```bash
 npx skills list
-```
-
-List available skills in the repository:
-
-```bash
-npx skills add xue-xiaobao/cloudflare-r2 --list
 ```
 
 <a id="usage"></a>
