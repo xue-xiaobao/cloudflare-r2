@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cloudflare R2 图床"
+  short_description: "使用 Cloudflare R2 免费额度安全上传和管理图片图床"
+  default_prompt: "使用 Cloudflare R2 图床：检查费用、上传图片并返回公开链接。"
