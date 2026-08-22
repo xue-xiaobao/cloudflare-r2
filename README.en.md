@@ -31,8 +31,8 @@
 
 It helps you:
 
-- Set up R2 and check free-tier usage, billing, and accidental payment risks;
-- Upload images through the dashboard or Wrangler and return public URLs;
+- Prepare the bucket name, `r2-manifest.json`, object keys, and upload commands, then hand account-level actions to the user in the browser;
+- Create the bucket, enable the `r2.dev` public URL, upload images with Wrangler, and return verified public URLs;
 - Inspect Cloudflare metrics or estimate current-month free-tier usage with a read-only GraphQL script.
 
 <a id="install"></a>
@@ -65,7 +65,15 @@ Example request (the exact prefix depends on your Agent):
 Use cloudflare-r2 to upload this image and check the current R2 free-tier usage.
 ```
 
-When uploading an image, the Skill guides you to confirm the bucket, public URL, and object key. For usage checks, treat Cloudflare's Billable Usage page as the source of truth.
+When setting up a host, the Agent selects the bucket name, prepares the upload manifest, and opens the login page. You only complete Cloudflare login, R2 subscription/billing confirmation, and Wrangler authorization in the browser. The Agent then creates the bucket, enables the public URL, uploads the images, and verifies the links. For usage checks, treat Cloudflare's Billable Usage page as the source of truth.
+
+The command path is:
+
+```bash
+npx wrangler r2 bucket create <agent-selected-bucket>
+npx wrangler r2 bucket dev-url enable <agent-selected-bucket> --force
+npx wrangler r2 bucket dev-url get <agent-selected-bucket>
+```
 
 <a id="boundary"></a>
 ## Billing and safety

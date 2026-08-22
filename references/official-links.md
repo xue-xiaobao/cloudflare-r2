@@ -6,6 +6,7 @@
 - [R2 存储桶公共访问](https://developers.cloudflare.com/r2/buckets/public-buckets/)
 - [R2 上传对象](https://developers.cloudflare.com/r2/objects/upload-objects/)
 - [R2 CLI](https://developers.cloudflare.com/r2/get-started/cli/)
+- [Wrangler R2 命令参考](https://developers.cloudflare.com/r2/reference/wrangler-commands/)
 - [R2 API Token](https://developers.cloudflare.com/r2/api/tokens/)
 - [R2 Metrics 与 GraphQL](https://developers.cloudflare.com/r2/platform/metrics-analytics/)
 - [GraphQL Analytics Token](https://developers.cloudflare.com/analytics/graphql-api/getting-started/authentication/api-token-auth/)

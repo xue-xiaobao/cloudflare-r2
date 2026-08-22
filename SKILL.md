@@ -12,10 +12,31 @@ R2 的定位是“图片源站/中转图床”。公众号外链图片通常会�
 ## 安全边界
 
 - 创建存储桶、开启公开访问、上传或删除对象前，先确认用户已明确授权。
+- 把流程拆成两类动作：账户持有人在浏览器中完成登录、账户验证、R2 订阅/结算确认；Agent 负责命名、命令准备、资源创建、公开 URL 开启、上传和验收。
 - 凭据、支付信息和密钥通过环境变量、`wrangler login` 或安全账户设置处理；命令输出和文档仅展示占位符。
 - 任何付款方式、自动扣款、套餐、预算或订阅变更都属于高风险操作。先展示当前状态和影响，等用户明确授权后再修改；预算告警用于提示，实际计费以 Billable Usage 为准。
 - 公共桶里的对象可被任何拿到链接的人读取；上传范围限定为适合公开访问的对象，敏感文件由私有存储管理。
 - 优先复用已有桶，避免同一用途重复创建；图床默认使用 R2 **Standard** 存储。
+
+## 0. Agent 准备包与人类检查点
+
+当用户要求“搭建图床”时，先完成准备，再把唯一需要人类处理的动作集中列出。不要让用户手动填写桶名称、逐张整理图片、复制公开 URL 或手写上传命令。
+
+### Agent 先准备
+
+1. 检查当前工作目录和用户提供的图片；统计文件数量、大小、格式和 SHA-256，筛出适合公开访问的文件。
+2. 根据项目名生成小写、数字和连字符组成的桶名，例如 `<project-slug>-images`；发生重名时自动追加短后缀。先准备这个候选名，不让用户填写。
+3. 生成一次性的 `r2-manifest.json` 和 `upload.sh`：包含对象前缀、对象 key、Content-Type、本地文件路径、大小、哈希和待执行的 Wrangler 命令。默认放在临时目录；需要保留时使用项目内 `.r2/`，并提醒用户不要提交凭据或本地隐私路径。
+4. 调用当前 Agent 可用的浏览器能力打开 [Cloudflare Dashboard](https://dash.cloudflare.com/) 和 R2 页面；同时在终端启动 `npx wrangler login`，让浏览器承担登录与授权界面。若当前环境没有浏览器控制能力，依然启动该命令，让 Wrangler 打开默认浏览器。登录完成后，Agent 用 `npx wrangler whoami` 和 `npx wrangler r2 bucket list` 验证会话并检查可复用的桶。
+5. 读取当前 R2 订阅、Billable Usage 和支付状态，形成一份简短的费用检查结果；涉及支付或订阅变更时停在浏览器确认页面。
+
+### 人类只处理账户级确认
+
+人类只需要在已打开的浏览器中完成：Cloudflare 登录/邮箱验证、首次 R2 订阅或结算确认、Wrangler OAuth 授权，以及任何明确的支付确认。人类完成后只需回复“已授权”或“已完成”。
+
+账户级确认完成后，Agent 继续执行后续命令。桶名、Standard 存储、Public Development URL、对象路径、上传和链接校验由 Agent 处理；这些步骤不需要用户再复制粘贴。
+
+如果 Cloudflare 账户尚未开通 R2，Agent 应停在 R2 checkout 页面，说明将启用的产品、免费额度和潜在计费边界，等待用户在浏览器确认后重试命令。
 
 ## 1. 申请和零意外扣费检查
 
@@ -36,13 +57,22 @@ R2 的定位是“图片源站/中转图床”。公众号外链图片通常会�
 
 ## 2. 创建桶和公开链接
 
-如果没有可复用的桶：
+如果没有可复用的桶，Agent 在用户已经明确授权创建图床后自动执行：
 
-1. R2 → **Create bucket**。
-2. 使用小写字母、数字和连字符命名，例如 `xiaobao-gzh-images`。
-3. 选择 Standard 存储，图床使用单一桶即可。
+```bash
+npx wrangler r2 bucket create "<agent-selected-bucket>"
+```
 
-公众号或网页需要直接读取图片时，在桶的 **Settings → Public Development URL** 开启 `r2.dev`，输入 `allow` 确认。`r2.dev` 是开发用途、具有访问限速的公开地址，适合低频公众号素材中转；高流量生产站点应采用更适合的部署方案。[公共桶说明](https://developers.cloudflare.com/r2/buckets/public-buckets/)
+桶名由 Agent 根据工作目录和用途确定，并在执行前展示给用户。命名规则是小写字母、数字和连字符，长度 3–63；图床使用单一 Standard 桶。
+
+公众号或网页需要直接读取图片时，Agent 在用户已明确允许公开读取后执行：
+
+```bash
+npx wrangler r2 bucket dev-url enable "<bucket>" --force
+npx wrangler r2 bucket dev-url get "<bucket>"
+```
+
+`r2.dev` 是开发用途、具有访问限速的公开地址，适合低频公众号素材中转；高流量生产站点应采用更适合的部署方案。[公共桶说明](https://developers.cloudflare.com/r2/buckets/public-buckets/) [Wrangler 命令](https://developers.cloudflare.com/r2/reference/wrangler-commands/)
 
 生产网页需要缓存、WAF 或稳定域名时，使用 **Settings → Custom Domains → Add** 绑定自己账户中的域名。自定义域名会使请求经过 Cloudflare Cache；`r2.dev` 作为独立地址使用。[R2 缓存说明](https://developers.cloudflare.com/cache/interaction-cloudflare-products/r2/)
 
@@ -54,7 +84,9 @@ R2 的定位是“图片源站/中转图床”。公众号外链图片通常会�
 
 ## 3. 上传图片并返回图床链接
 
-### 网页后台（默认）
+### 网页后台（备用路径）
+
+当 Wrangler 会话可用时，Agent 优先使用命令行批量上传。只有用户明确选择网页上传，或 CLI 能力受限时，才让用户在已打开的 R2 页面中完成拖拽上传。
 
 进入 R2 → 目标 bucket → **Upload**，拖入图片或选择文件。用前缀整理对象，例如：
 
@@ -79,12 +111,11 @@ curl -I "https://pub-xxxx.r2.dev/2026/08/article-cover.png"
 
 应看到 HTTP 200 和正确的 `Content-Type`（PNG 为 `image/png`，JPEG 为 `image/jpeg`）。如果用于微信公众号，先把链接粘贴进编辑器，确认微信能抓取；发布后以微信文章内的图片为准。
 
-### 命令行（批量或重复上传）
+### 命令行（默认路径）
 
-优先使用 Wrangler，避免在命令行参数中暴露密钥：
+Agent 根据前面生成的上传清单，逐项或批量执行 Wrangler，避免让用户手写命令：
 
 ```bash
-npx wrangler login
 npx wrangler r2 object put \
   <bucket>/<object-key> \
   --file="/absolute/path/to/image.png" \
@@ -146,3 +177,6 @@ python3 scripts/r2_usage.py \
 - **公众号抓取失败**：先用 `curl -I` 验证公网可达，再检查链接是否带临时签名、是否被防盗链或访问控制拦截。
 - **国内访问体验**：`r2.dev` 定位为通用公开地址；公众号导入后，文章内展示通常由微信服务器负责。外部网页长期使用时，再评估自定义域名和国内 CDN。
 - **额度接近上限**：暂停批量上传和低优先级自动读取，先查看 Billable Usage，并结合预算告警安排后续用量。
+- **CLI 授权未完成**：重新启动 `npx wrangler login`，让浏览器完成 OAuth；不要让用户把 token 粘贴到聊天中。
+- **账户尚未开通 R2**：打开 R2 checkout 页面，等待账户持有人确认后，重新执行桶创建命令。
+- **公开 URL 命令被账户策略拦截**：保留已生成的桶名和上传清单，打开 R2 Settings 页面，由用户完成一次账户级确认后，Agent 继续执行 `dev-url enable` 和 URL 验证。

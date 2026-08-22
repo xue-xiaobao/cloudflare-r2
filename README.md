@@ -31,8 +31,8 @@
 
 它负责：
 
-- 申请和配置 R2，并检查免费额度、账单与自动扣款风险；
-- 通过网页或 Wrangler 上传图片并生成公开链接；
+- 先准备桶名、`r2-manifest.json`、对象路径和上传命令，再把登录、订阅确认等账户级动作交给用户在浏览器完成；
+- 通过 Wrangler 自动创建桶、开启 `r2.dev` 公开访问、上传图片并生成公开链接；
 - 在 Cloudflare 控制台查看指标，或用只读 GraphQL 脚本估算当前月免费额度消耗。
 
 <a id="install"></a>
@@ -65,7 +65,15 @@ npx skills list
 使用 cloudflare-r2：帮我上传这张图片，并检查当前 R2 免费额度。
 ```
 
-上传图片时，Skill 会引导你确认桶、公开访问地址和对象路径；查询额度时，优先以 Cloudflare 控制台的 Billable Usage 为准。
+搭建图床时，Agent 会自动确定桶名、准备上传清单并打开登录页面。你只需要在浏览器完成 Cloudflare 登录、R2 订阅/账单确认和 Wrangler 授权；之后 Agent 会继续创建桶、开启公开 URL、上传图片并验证链接。查询额度时，优先以 Cloudflare 控制台的 Billable Usage 为准。
+
+对应的命令路径是：
+
+```bash
+npx wrangler r2 bucket create <agent-selected-bucket>
+npx wrangler r2 bucket dev-url enable <agent-selected-bucket> --force
+npx wrangler r2 bucket dev-url get <agent-selected-bucket>
+```
 
 <a id="boundary"></a>
 ## 费用与安全边界
