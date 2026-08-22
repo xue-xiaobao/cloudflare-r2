@@ -5,6 +5,8 @@ description: "Use Cloudflare R2 as a low-volume image host: set up a bucket and 
 
 # Cloudflare R2 图床
 
+这是一个与具体 Agent 平台无关的通用 Skill。只要 Agent 支持标准 `SKILL.md` 目录或 Skills CLI，就可以复用下面的流程；`agents/openai.yaml` 只是可选的 OpenAI/Codex 界面元数据，不是运行依赖。
+
 把 R2 当作“图片源站/中转图床”，不要把它描述成国内 CDN。对微信公众号，外链图片通常会在编辑器中被微信重新托管，因此 R2 的国内访问速度不是发布后展示速度的唯一决定因素。
 
 ## 安全边界

@@ -1,28 +1,53 @@
 # cloudflare-r2
 
-一个面向 Codex 的开源 Skill，用于把 Cloudflare R2 作为低频图片图床使用：
+一个不绑定特定 Agent 平台的开源 Skill，用于把 Cloudflare R2 作为低频图片图床使用。只要 Agent 支持标准 `SKILL.md` 目录或 Skills CLI，就可以复用这套流程。
+
+A vendor-neutral open-source Agent Skill for using Cloudflare R2 as a low-volume image host. It works with any Agent that supports the standard `SKILL.md` layout or the Skills CLI.
+
+它负责：
+
+It helps you:
 
 - 申请和配置 R2，并检查免费额度、账单与自动扣款风险；
+- Set up R2 and check free-tier usage, billing, and accidental payment risks;
 - 通过网页或 Wrangler 上传图片并生成公开链接；
+- Upload images through the dashboard or Wrangler and return public URLs;
 - 在 Cloudflare 控制台查看指标，或用只读 GraphQL 脚本估算当前月免费额度消耗。
+- Inspect Cloudflare metrics or estimate current-month free-tier usage with a read-only GraphQL script.
 
 ## 安装
 
-使用开源 Skills CLI 从 GitHub 安装。`npx` 随 Node.js 一起提供：
+使用开源 Skills CLI 从 GitHub 安装。`npx` 随 Node.js 一起提供。具体安装目录由当前 Agent 和 Skills CLI 决定，不要把本 Skill 写死成 Codex、Claude Code 或其他单一平台专用。
 
-全局安装到当前用户的 Codex Skills 目录：
+Install it with the open-source Skills CLI. The target directory is chosen by the current Agent and the CLI; this Skill is not tied to Codex, Claude Code, or any single platform.
 
-```bash
-npx skills add xue-xiaobao/cloudflare-r2 -g -a codex -y
-```
+安装到当前用户，并同步到 Skills CLI 检测到的所有 Agent：
 
-`npx skills` 会根据目标 Agent 使用全局 `~/.agents/skills/` 或项目内的 `./.agents/skills/`；以安装器最后输出的目标路径为准。
-
-只安装到当前项目：
+Install globally for all Agents detected by the CLI:
 
 ```bash
-npx skills add xue-xiaobao/cloudflare-r2 -a codex -y
+npx skills add xue-xiaobao/cloudflare-r2 -g -a '*' -y
 ```
+
+只安装到当前项目，并同步到所有检测到的 Agent：
+
+Install it in the current project for all detected Agents:
+
+```bash
+npx skills add xue-xiaobao/cloudflare-r2 -a '*' -y
+```
+
+只安装到指定 Agent 时，把 `*` 换成 CLI 支持的 Agent 名称：
+
+To target specific Agents, replace `*` with names supported by your CLI:
+
+```bash
+npx skills add xue-xiaobao/cloudflare-r2 -g -a codex claude-code -y
+```
+
+`npx skills` 会根据作用域和目标 Agent 选择安装路径；以安装器最后输出的目标路径为准。不同 Agent 的调用语法可能不同，请按照对应 Agent 的说明调用已安装的 `cloudflare-r2`。
+
+The CLI chooses the installation path based on scope and target Agents. Follow each Agent's own invocation syntax after installation.
 
 安装后可以检查：
 
@@ -36,13 +61,13 @@ npx skills list
 npx skills add xue-xiaobao/cloudflare-r2 --list
 ```
 
-在 Codex 中显式调用：
+调用示例（具体前缀由 Agent 决定）：
 
 ```text
-$cloudflare-r2 帮我上传这张图片，并检查当前 R2 免费额度
+使用 cloudflare-r2：帮我上传这张图片，并检查当前 R2 免费额度。
 ```
 
-也可以让 Codex 根据 Skill 描述自动选择它。
+The exact invocation prefix is Agent-specific. The skill itself only depends on the standard `SKILL.md` instructions and its relative `scripts/` path.
 
 ## 使用前的重要事项
 
