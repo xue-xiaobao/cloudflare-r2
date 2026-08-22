@@ -122,13 +122,13 @@ R2 的 free tier 当前为：
 export CF_ACCOUNT_ID="你的_account_id"
 export CF_API_TOKEN="只读_analytics_token"
 export R2_BUCKET="你的_bucket_name"
-python3 .claude/skills/cloudflare-r2/scripts/r2_usage.py
+python3 scripts/r2_usage.py
 ```
 
 也可以指定时间范围：
 
 ```bash
-python3 .claude/skills/cloudflare-r2/scripts/r2_usage.py \
+python3 scripts/r2_usage.py \
   --start "2026-08-01T00:00:00Z" \
   --end "2026-08-31T23:59:59Z"
 ```
