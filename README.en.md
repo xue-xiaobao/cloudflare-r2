@@ -1,10 +1,33 @@
-# cloudflare-r2
+<h1 align="center">Cloudflare R2 Image Host</h1>
 
-[中文](README.md)
+<p align="center"><strong>Agent Skills · Low-volume image hosting · Cloudflare R2</strong></p>
+<p align="center"><em>Upload once, reuse reliably.</em></p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<p align="center">
+  <a href="./README.md">中文</a> · <strong>English</strong>
+</p>
+<p align="center">
+  <a href="https://github.com/xue-xiaobao/cloudflare-r2/stargazers"><img src="https://img.shields.io/github/stars/xue-xiaobao/cloudflare-r2?style=flat&amp;logo=github" alt="GitHub stars"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/xue-xiaobao/cloudflare-r2" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/Agent%20Skills-compatible-4F46E5" alt="Agent Skills compatible">
+  <img src="https://img.shields.io/badge/docs-English-E11D48" alt="English documentation">
+</p>
+<p align="center">
+  <a href="#about">About</a> ·
+  <a href="#install">Install</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#boundary">Billing &amp; safety</a> ·
+  <a href="#metrics">Usage metrics</a> ·
+  <a href="#license">License</a> ·
+  <a href="#feedback">Feedback</a>
+</p>
 
-A vendor-neutral open-source Agent Skill for using Cloudflare R2 as a low-volume image host. It works with any Agent that supports the standard `SKILL.md` layout or the Skills CLI.
+---
+
+<a id="about"></a>
+## About
+
+`cloudflare-r2` is an open-source Agent Skill built on the standard Agent Skills layout. It uses Cloudflare R2 as a low-volume image host and can be installed into compatible Agents with the Skills CLI.
 
 It helps you:
 
@@ -12,23 +35,30 @@ It helps you:
 - Upload images through the dashboard or Wrangler and return public URLs;
 - Inspect Cloudflare metrics or estimate current-month free-tier usage with a read-only GraphQL script.
 
+<a id="install"></a>
 ## Installation
 
-Install it with the open-source Skills CLI. `npx` is provided with Node.js. The target directory is chosen by the current Agent and the CLI; this Skill is not tied to Codex, Claude Code, or any single platform.
+Install it with the open-source Skills CLI. `npx` is provided with Node.js, and the CLI selects the installation path for the current Agent. The Skill follows the standard `SKILL.md` layout.
 
-Install globally for all Agents detected by the CLI:
+### Global installation
+
+Install for the current user and sync to every Agent detected by the CLI:
 
 ```bash
 npx skills add xue-xiaobao/cloudflare-r2 -g -a '*' -y
 ```
 
-Install it in the current project for all detected Agents:
+### Project installation
+
+Install in the current project and sync to every Agent detected in that project:
 
 ```bash
 npx skills add xue-xiaobao/cloudflare-r2 -a '*' -y
 ```
 
-To target specific Agents, replace `*` with names supported by your CLI:
+### Specific Agents
+
+Replace `*` with Agent names supported by your CLI:
 
 ```bash
 npx skills add xue-xiaobao/cloudflare-r2 -g -a codex claude-code -y
@@ -42,11 +72,14 @@ Check installed skills:
 npx skills list
 ```
 
-List available skills in the repository without installing:
+List available skills in the repository:
 
 ```bash
 npx skills add xue-xiaobao/cloudflare-r2 --list
 ```
+
+<a id="usage"></a>
+## Usage
 
 Example request (the exact prefix depends on your Agent):
 
@@ -54,16 +87,20 @@ Example request (the exact prefix depends on your Agent):
 Use cloudflare-r2 to upload this image and check the current R2 free-tier usage.
 ```
 
-## Important notes
+When uploading an image, the Skill guides you to confirm the bucket, public URL, and object key. For usage checks, treat Cloudflare's Billable Usage page as the source of truth.
 
-1. R2's free tier is not a hard spending cap. Exceeding the free tier, using a non-Standard storage class, or enabling other paid products may incur charges.
-2. Never put credit-card details, PayPal details, API tokens, or secret keys in the repository, shell history, or chat messages.
-3. The `r2.dev` public URL is intended for low-volume, non-production use. Evaluate a custom domain and CDN costs separately for high-traffic websites.
-4. Objects in a public bucket are readable by anyone who obtains the URL. Do not upload private or sensitive files.
+<a id="boundary"></a>
+## Billing and safety
 
-## Free-tier usage script
+1. R2 free-tier allowances are calculated monthly. Exceeding the free tier, using a non-Standard storage class, or enabling other paid products may incur charges.
+2. Keep credit-card details, PayPal details, API tokens, and secret keys in secure account storage or environment variables. Do not put them in the repository, shell history, or chat messages.
+3. The `r2.dev` public URL is intended for low-volume, development use. Evaluate a custom domain and CDN costs separately for high-traffic websites.
+4. Objects in a public bucket are readable by anyone who obtains the URL. Upload files that are suitable for public access.
 
-The script only reads Cloudflare GraphQL Analytics and does not modify the account:
+<a id="metrics"></a>
+## Free-tier usage
+
+The script reads Cloudflare GraphQL Analytics to estimate current-month R2 operation and storage usage:
 
 ```bash
 export CF_ACCOUNT_ID="your-account-id"
@@ -72,7 +109,7 @@ export R2_BUCKET="your-bucket-name"
 python3 scripts/r2_usage.py
 ```
 
-The API token only needs `Account → Account Analytics → Read`. The script reports an estimate; use Cloudflare **Billable Usage** as the billing source of truth.
+The API token needs `Account → Account Analytics → Read`. The script reports an estimate; use Cloudflare **Billable Usage** as the billing source of truth.
 
 ## Official resources
 
@@ -82,6 +119,12 @@ The API token only needs `Account → Account Analytics → Read`. The script re
 - [R2 Metrics](https://developers.cloudflare.com/r2/platform/metrics-analytics/)
 - [Cloudflare GraphQL Analytics tokens](https://developers.cloudflare.com/analytics/graphql-api/getting-started/authentication/api-token-auth/)
 
+<a id="license"></a>
 ## License
 
 [MIT](./LICENSE)
+
+<a id="feedback"></a>
+## Feedback
+
+Use [GitHub Issues](https://github.com/xue-xiaobao/cloudflare-r2/issues) to report problems or suggest improvements. Remove credentials, personal information, and internal project names before submitting.
